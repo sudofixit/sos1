@@ -60,8 +60,8 @@ export async function createCheckoutSession(payload: CreateCheckoutPayload) {
         quantity: 1,
       },
     ],
-    success_url: `${CONFIG.FRONTEND_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${CONFIG.FRONTEND_URL}/cancel.html`,
+    success_url: `${CONFIG.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${CONFIG.FRONTEND_URL}/cancel`,
   })
 
   await prisma.sOSRequest.update({ where: { id: sos.id }, data: { stripeSessionId: session.id } })

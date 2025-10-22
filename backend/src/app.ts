@@ -6,10 +6,14 @@ import { paymentRouter } from "./routes/payment";
 import { adminRouter } from "./routes/admin";
 import { webhookRouter } from "./routes/webhook";
 import { authRouter } from "./routes/auth";
+import { CONFIG } from "./config";
 
 export const app = new Hono();
 
-app.use("*", cors());
+app.use("*", cors({
+  origin: CONFIG.FRONTEND_URL,
+  credentials: true,
+}));
 
 // mount routes
 app.use("*", logger());

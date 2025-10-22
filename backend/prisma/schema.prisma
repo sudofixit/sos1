@@ -7,24 +7,26 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 model SOSRequest {
-  id              String    @id @default(cuid())
-  name            String
-  phone           String
-  email           String
-  address         String
-  operator        String
-  connectionType  String
-  delay           String
-  details         String
-  status          SOSStatus @default(PENDING)
-  stripeSessionId String?   @unique
-  paymentIntentId String?   @unique
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                 String    @id @default(cuid())
+  name               String
+  phone              String
+  email              String
+  address            String
+  operator           String
+  connectionType     String
+  delay              String
+  details            String
+  status             SOSStatus @default(PENDING)
+  stripeSessionId    String?   @unique
+  paymentIntentId    String?   @unique
+  assignedTechnician String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 enum SOSStatus {

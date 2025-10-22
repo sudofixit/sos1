@@ -32,6 +32,45 @@ adminRouter.get('/requests', async (c) => {
   return c.json({ data: requests })
 })
 
+adminRouter.get('/requests/:id', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const request = await prisma.sOSRequest.findUnique({
+      where: { id }
+    })
+    if (!request) {
+      return c.json({ error: 'Request not found' }, 404)
+    }
+    return c.json({ data: request })
+  } catch (e: any) {
+    return c.json({ error: e.message || 'Failed to fetch request' }, 500)
+  }
+})
+
+adminRouter.post('/requests/:id/assign', async (c) => {
+  try {
+    const id = c.req.param('id')
+    const body = await c.req.json()
+    const { technician } = body
+
+    if (!technician) {
+      return c.json({ error: 'Technician name is required' }, 400)
+    }
+
+    const request = await prisma.sOSRequest.update({
+      where: { id },
+      data: {
+        assignedTechnician: technician,
+        status: 'ASSIGNED'
+      }
+    })
+
+    return c.json({ data: request })
+  } catch (e: any) {
+    return c.json({ error: e.message || 'Failed to assign technician' }, 500)
+  }
+})
+
 adminRouter.post('/capture', zValidator('json', captureSchema), async (c) => {
   try {
     const body = c.req.valid('json')
