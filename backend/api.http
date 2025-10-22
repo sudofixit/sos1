@@ -1,0 +1,74 @@
+# VS Code REST Client file for API exploration
+# Requires the "REST Client" extension (humao.rest-client)
+
+@baseUrl = http://localhost:4242
+@ADMIN_EMAIL = admin@example.com
+@ADMIN_PASSWORD = password123
+@adminCookie = admin_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2MTIxNzU0Nn0.TLSQbfizQeEcW9Z53HeLApGIikndWSdsNips3g1uppo
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc2MTIxNzU0Nn0.TLSQbfizQeEcW9Z53HeLApGIikndWSdsNips3g1uppo
+@checkoutSessionId = cs_test_a1XJpBGUsFnPPZn6mKWzS9LalwQIz3qvgNasEMA6z0gD2IWIpiQUP0GRrP
+@payment_intent_id = pi_3SL0FJSC1SGQ8hbn0OBmidq0
+@stripe_signature = 
+
+### Health
+GET {{baseUrl}}/
+
+### Login (sets admin_token cookie)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{ADMIN_EMAIL}}",
+  "password": "{{ADMIN_PASSWORD}}",
+  "remember": true
+}
+
+### Admin: list requests (requires cookie or Bearer token)
+GET {{baseUrl}}/admin/requests
+Cookie: admin_token={{{{adminToken}}}}
+Authorization: Bearer {{adminToken}}
+
+### Payment: create checkout session
+POST {{baseUrl}}/create-checkout-session
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "phone": "+4912345678",
+  "email": "john@example.com",
+  "address": "Berlin, DE",
+  "operator": "Telekom",
+  "connectionType": "DSL",
+  "delay": "none",
+  "details": "Test SOS via REST Client"
+}
+
+### Payment: get checkout session by ID
+GET {{baseUrl}}/checkout-session/{{checkoutSessionId}}
+
+### Payment: capture payment intent
+POST {{baseUrl}}/capture
+Content-Type: application/json
+
+{
+  "payment_intent_id": "{{payment_intent_id}}",
+  "amount_to_capture": 50
+}
+
+### Payment: cancel payment intent
+POST {{baseUrl}}/cancel
+Content-Type: application/json
+
+{
+  "payment_intent_id": "{{payment_intent_id}}"
+}
+
+### Webhook: Stripe (send raw payload, set signature header)
+POST {{baseUrl}}/webhook/stripe
+Content-Type: application/json
+stripe-signature: {{stripe_signature}}
+
+{
+  "type": "payment_intent.succeeded",
+  "data": { "object": { "id": "pi_test" } }
+}

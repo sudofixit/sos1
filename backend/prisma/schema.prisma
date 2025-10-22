@@ -1,0 +1,36 @@
+// Prisma schema for SOS Connection
+// You will need to set DATABASE_URL in .env
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model SOSRequest {
+  id              String    @id @default(cuid())
+  name            String
+  phone           String
+  email           String
+  address         String
+  operator        String
+  connectionType  String
+  delay           String
+  details         String
+  status          SOSStatus @default(PENDING)
+  stripeSessionId String?   @unique
+  paymentIntentId String?   @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+enum SOSStatus {
+  PENDING
+  ASSIGNED
+  COMPLETED
+  FAILED
+  CANCELED
+}
